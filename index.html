@@ -1,0 +1,193 @@
+
+
+<!DOCTYPE html>
+<html lang="rw">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login & Sign Up - Secure System</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+</head>
+
+<body class="auth-body"
+  style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; min-height: 100vh; overflow-y: auto; padding: 20px; box-sizing: border-box;">
+
+  <!-- ISAHA HEJURU -->
+  <div class="login-clock-header" style="
+      background: rgba(2, 174, 7, 0.851); 
+      backdrop-filter: blur(10px); 
+      border: 1px solid rgba(242, 9, 9, 0.2); 
+      padding: 10px 25px; 
+      border-radius: 30px; 
+      margin-bottom: 20px; 
+      display: flex; 
+      align-items: center; 
+      gap: 15px; 
+      color: #fff;
+      box-shadow: 0 8px 16px rgba(12, 26, 220, 0.83);
+      z-index: 100;">
+    <div style="font-size: 20px; color: #38bdf8;"><i class="fa-regular fa-clock"></i></div>
+    <div>
+      <div id="loginLiveClock" style="font-size: 18px; font-weight: 700; font-family: monospace; letter-spacing: 1px;">00:00:00</div>
+      <div id="loginLiveDate" style="font-size: 11px; opacity: 0.9; font-weight: 500;">Kuwa...</div>
+    </div>
+  </div>
+
+  <div class="landing-wrapper" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+    <div class="auth-container" id="container">
+
+      <!-- Sign Up Form -->
+      <div class="form-container sign-up-container">
+        <form class="auth-form" onsubmit="handleSignUp(event)">
+          <h1>Rema Konti</h1>
+          <span>Andika umwirondoro wawe</span>
+          <input class="auth-input" type="text" id="signupName" placeholder="Izina" required />
+          <input class="auth-input" type="email" id="signupEmail" placeholder="Imeri" required />
+          <input class="auth-input" type="tel" id="signupPhone" placeholder="Numero ya Telefoni (078...)" required />
+
+          <select class="auth-input" id="signupRole" style="color: #475569;" required>
+            <option value="" disabled selected>Hitamo Inshingano (Role)...</option>
+            <option value="User">Umukoresha (User)</option>
+            <option value="Manager">Manager</option>
+          </select>
+
+          <input class="auth-input" type="password" id="signupPassword" placeholder="Ijambo ry'ibanga" required />
+          <button class="auth-btn" type="submit" id="signupSubmitBtn">Sign Up</button>
+        </form>
+      </div>
+
+      <!-- Sign In Form -->
+      <div class="form-container sign-in-container" id="signInFormBox">
+        <form class="auth-form" onsubmit="handleSignIn(event)">
+          <h1>Injira</h1>
+          <span>Ukoreshe imeri na password</span>
+          <input class="auth-input" type="email" id="signinEmail" placeholder="Imeri" required />
+
+          <div style="position: relative; width: 100%; margin: 8px 0;">
+            <input class="auth-input" type="password" id="signinPassword" placeholder="Ijambo ry'ibanga" required
+              style="margin: 0; padding-right: 40px;" />
+            <i class="fa-solid fa-eye" id="toggleSigninPassword" onclick="togglePasswordVisibility()"
+              style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #64748b; font-size: 14px;"></i>
+          </div>
+
+          <div style="width: 100%; text-align: right; margin-top: 4px;">
+            <a href="javascript:void(0);" onclick="toggleForgotForm()"
+              style="font-size: 11px; color: #0284c7; text-decoration: none;">Wibagiwe ijambo ry'ibanga?</a>
+          </div>
+
+          <button class="auth-btn" type="submit" id="signinSubmitBtn" style="margin-top: 10px;">Sign In</button>
+        </form>
+      </div>
+
+
+
+      <div class="form-container" id="forgotPasswordContainer"
+        style="display: none; width: 100%; left: 0; z-index: 200; position: absolute; top: 0; height: 100%; background: #ffffff;">
+        <form class="auth-form" onsubmit="handleForgotPassword(event)">
+          <h1>Wibagiwe Password?</h1>
+          <span>Andika imeri yawe wohererezwe code</span>
+          <input class="auth-input" type="email" id="forgotEmail" placeholder="Andika imeri yawe..." required
+            style="max-width: 320px;" />
+          <button class="auth-btn" type="submit">Ohereza Code</button>
+          <a href="javascript:void(0);" onclick="toggleForgotForm()"
+            style="margin-top: 15px; font-size: 12px; color: #64748b; text-decoration: none;">
+            <i class="fa-solid fa-arrow-left"></i> Subira kuri Login
+          </a>
+        </form>
+      </div>
+
+      <!-- Reset Password Form -->
+      <div class="form-container" id="resetPasswordContainer"
+        style="display: none; width: 100%; left: 0; z-index: 200; position: absolute; top: 0; height: 100%; background: #ffffff;">
+        <form class="auth-form" onsubmit="handleResetPassword(event)">
+          <h1>Hindura Password</h1>
+          <span>Andika code wabonye na password nshya</span>
+          <input class="auth-input" type="text" id="resetCodeInput" placeholder="Code y'imibare 4" required
+            style="max-width: 320px;" />
+          <input class="auth-input" type="password" id="newPasswordInput" placeholder="Ijambo ry'ibanga rishya" required
+            style="max-width: 320px;" />
+          <button class="auth-btn" type="submit">Emeza Password Nshya</button>
+          <a href="javascript:void(0);" onclick="toggleForgotForm()"
+            style="margin-top: 15px; font-size: 12px; color: #64748b; text-decoration: none;">
+            <i class="fa-solid fa-arrow-left"></i> Subira kuri Login
+          </a>
+        </form>
+      </div>
+
+
+
+      <!-- Overlay Panel -->
+      <div class="overlay-container" id="overlayContainer">
+        <div class="overlay">
+          <div class="overlay-panel overlay-left">
+            <h1>Urakaza neza!</h1>
+            <p>Niba usanzwe ufite konti, kanda hano winjire.</p>
+            <button class="auth-btn ghost" id="signIn">Sign In</button>
+          </div>
+          <div class="overlay-panel overlay-right">
+            <h1>Muraho, Nshuti!</h1>
+            <p>Tangira urugendo rwawe utangira uremye konti.</p>
+            <button class="auth-btn ghost" id="signUp">Sign Up</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BACK BUTTON -->
+  <div class="back-section-wrapper" style="
+      width: 100%; max-width: 450px; margin: 25px auto 20px auto; 
+      background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 248, 94, 0.884); 
+      padding: 18px; border-radius: 16px; text-align: center; 
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3); position: relative; z-index: 99; box-sizing: border-box;">
+    <p style="color: #17ec0b; font-size: 13px; margin-bottom: 12px; font-weight: 500;">
+      Shaka gusubira ku rupapuro rwa Serivisi?
+    </p>
+    <a href="philosopher.html" class="back-btn" style="
+        display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+        background: linear-gradient(135deg, #0284c7, #38bdf8); color: #ffffff;
+        text-decoration: none; padding: 12px 30px; border-radius: 30px;
+        font-size: 15px; font-weight: 600; box-shadow: 0 6px 20px rgba(2, 132, 199, 0.4);
+        width: 100%; max-width: 250px;">
+      <i class="fa-solid fa-arrow-left"></i> Back to Services
+    </a>
+  </div>
+
+  <script src="script.js">
+
+function getDashboardHref() {
+  const path = window.location.pathname.toLowerCase();
+  if (path.includes("dashboard_8.html")) return "dashboard_8.html";
+  if (path.includes("dashboard_6.html") || path.includes("index_3.html")) return "dashboard_6.html";
+  if (path.includes("dashboard_5.html")) return "dashboard_5.html";
+  return "dashboard.html";
+}
+
+
+function getLoginHref() {
+  const path = window.location.pathname.toLowerCase();
+  if (path.includes("dashboard_8.html") || path.includes("index_8.html")) return "index_8.html";
+  if (path.includes("dashboard_6.html") || path.includes("index_3.html")) return "index_3.html";
+  if (path.includes("dashboard_5.html") || path.includes("index_2.html")) return "index_2.html";
+  return "index.html";
+}
+const FIREBASE_CONFIG = {
+  apiKey: "API_KEY_YAWE_NYAYO",
+  authDomain: "PROJECT_ID_YAWE.firebaseapp.com",
+  databaseURL: "https://PROJECT_ID_YAWE-default-rtdb.firebaseio.com",
+  projectId: "PROJECT_ID_YAWE",
+  storageBucket: "PROJECT_ID_YAWE.appspot.com",
+  messagingSenderId: "SENDER_ID_YAWE",
+  appId: "APP_ID_YAWE"
+};
+
+  </script>
+</body>
+
+</html>

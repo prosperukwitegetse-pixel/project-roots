@@ -1,0 +1,654 @@
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="rw">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard System</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <!-- Firebase SDKs -->
+   <script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+</head>
+
+<body>
+
+  <!-- Sidebar Menu -->
+  <div class="sidebar" id="mainSidebar">
+    <div>
+      <div class="sidebar-brand"
+        style="font-size: 20px; font-weight: 700; margin-bottom: 25px; color: #38bdf8; display: flex; align-items: center; gap: 10px;">
+        <i class="fa-solid fa-chart-line"></i> MyDashboard
+      </div>
+      <div class="sidebar-menu" style="display: flex; flex-direction: column; gap: 8px;">
+        <button onclick="switchTab('home')" id="btn-home" class="active">
+          <i class="fa-solid fa-house"></i> Home
+        </button>
+        <button onclick="switchTab('analytics')" id="btn-analytics">
+          <i class="fa-solid fa-chart-pie"></i> Analytics
+        </button>
+        <button onclick="switchTab('users')" id="btn-users" style="justify-content: space-between;">
+          <span><i class="fa-solid fa-users"></i> Users (Approval)</span>
+          <span id="sidebarPendingBadge"
+            style="display: none; background: #ef4444; color: #fff; font-size: 11px; padding: 2px 7px; border-radius: 999px; font-weight: 700;">0</span>
+        </button>
+        <button onclick="switchTab('settings')" id="btn-settings">
+          <i class="fa-solid fa-gear"></i> Settings & Backup
+        </button>
+        <button onclick="switchTab('messages-announcements')" id="btn-messages-announcements">
+          <i class="fa-solid fa-comments"></i> Message & Announcements
+        </button>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="logout()">
+      <i class="fa-solid fa-right-from-bracket"></i> Logout
+    </button>
+  </div>
+
+  <!-- Main Content Body -->
+  <div class="main-content" id="mainContent">
+
+    <!-- AGACARD KO GUFUNGURA CYANGWA GUFUNGA SIDEBAR -->
+    <div id="sidebarToggleCard" onclick="toggleSidebar()" class="sidebar-toggle-card" title="Fungura / Funga Menu">
+      <div class="toggle-card-icon">
+        <i class="fa-solid fa-bars" id="toggleIcon"></i>
+      </div>
+      <div class="toggle-card-text">
+        <span id="toggleCardLabel">Menu</span>
+        <small>Kanda hano</small>
+      </div>
+    </div>
+
+    <!-- USER SESSION BADGE -->
+    <div class="user-session-badge">
+      <span id="loggedUserName" data-user-name>Umukoresha</span>
+      <small id="loggedUserRole" data-user-role>User</small>
+      <button type="button" onclick="handleLogout()">Logout</button>
+    </div>
+
+    <!-- TOP HEADER IRIMO ISAHA -->
+    <div class="top-header"
+      style="display: flex; justify-content: space-between; align-items: center; background: #ffffff; padding: 15px 25px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 25px; flex-wrap: wrap; gap: 12px;">
+      <div>
+        <h3 style="margin: 0; font-size: 18px; color: #0b62ee; display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
+          <span>📌 System Dashboard</span>
+          <span id="dbStatusBadge"
+            style="font-size: 11px; background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; padding: 3px 10px; border-radius: 12px; font-weight: 600;">
+            <i class="fa-solid fa-hard-drive"></i> Local Fallback
+          </span>
+        </h3>
+        <p style="margin: 4px 0 0 0; font-size: 12px; color: #e60808;">Murakaza neza mu murimo wanyu</p>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <button onclick="syncWithCloud(true)" class="btn-settings" style="background: #0284c7;">
+          <i class="fa-solid fa-cloud-arrow-up"></i> Sync Cloud
+        </button>
+        <div
+          style="text-align: right; background: #f8fafc; padding: 8px 16px; border-radius: 8px; border: 1px solid #cbd5e1;">
+          <div id="liveClock" style="font-size: 18px; font-weight: 700; color: #0284c7; font-family: monospace;">00:00:00</div>
+          <div id="liveDate" style="font-size: 11px; color: #64748b; font-weight: 500;">Kuwa...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1. HOME TAB -->
+    <div id="home" class="content-section active">
+      <h2 id="welcomeTitle">🏠 Ikaze kuri Home</h2>
+
+      <!-- ADMIN ALERT: ABATEGEREJE UBUREMGANZIRA -->
+      <div id="adminPendingAlertBox"
+        style="display: none; background: #fffbeb; border: 1px solid #f59e0b; border-left: 5px solid #d97706; padding: 14px 18px; border-radius: 10px; margin-top: 15px; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div style="color: #92400e; font-size: 13px; font-weight: 600;">
+          <i class="fa-solid fa-user-clock" style="color: #d97706; margin-right: 6px;"></i>
+          Hari abakoresha <span id="adminPendingAlertCount" style="background: #ef4444; color: #fff; padding: 1px 7px; border-radius: 999px;">0</span> bategereje ko ubaha uburenganzira (Pending).
+        </div>
+        <button onclick="switchTab('users')"
+          style="background: #d97706; color: #fff; border: none; padding: 7px 14px; border-radius: 7px; cursor: pointer; font-size: 12px; font-weight: 600;">
+          Reba Bose & Baha Uburenganzira
+        </button>
+      </div>
+
+      <!-- Agasanduku k'Ifoto y'Umukoresha -->
+      <div class="profile-card-home"
+        style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; display: flex; align-items: center; gap: 20px; margin: 20px 0;">
+        <div class="profile-avatar-container">
+          <img class="user-profile-avatar" id="userHomeAvatar"
+            src="https://ui-avatars.com/api/?name=User&background=0284c7&color=fff&size=100" alt="Ifoto y'Umukoresha"
+            style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #38bdf8;">
+        </div>
+        <div class="profile-info-home">
+          <h3 class="user-profile-name" id="homeUserName" style="color: #1e293b;">Izina ry'Umuser</h3>
+          <p class="user-profile-email" id="homeUserEmail" style="color: #64748b; font-size: 13px;">user@example.com</p>
+          <form onsubmit="updateHomeProfilePicture(event)"
+            style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
+            <input type="file" id="homeAvatarInput" accept="image/*" required style="font-size: 12px;">
+            <button type="submit" class="btn-settings" style="padding: 6px 12px; font-size: 12px;">Hindura Ifoto</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Utubati tw'Imibare -->
+      <div class="stats-container">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #38bdf8;"><i class="fa-solid fa-users"></i></div>
+          <div class="stat-info">
+            <h3 id="totalUsersCount">0</h3>
+            <p style="margin: 0; font-size: 12px; color: #f1da06;">Abakoresha Bose</p>
+          </div>
+        </div>
+        <div class="stat-card" onclick="switchTab('users')" style="cursor: pointer;" title="Kanda urebe abategereje">
+          <div class="stat-icon" style="background: #f59e0b;"><i class="fa-solid fa-clock"></i></div>
+          <div class="stat-info">
+            <h3 id="pendingUsersCount">0</h3>
+            <p style="margin: 0; font-size: 12px; color: #f1da06;">Bategereje Approval</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #10b981;"><i class="fa-solid fa-user-shield"></i></div>
+          <div class="stat-info">
+            <h3 id="adminCount">1</h3>
+            <p style="margin: 0; font-size: 12px; color: #f1da06;">ba Admin</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- AGASANDUKU KA ADMIN KO GUHA UBURENGANZIRA ABATEGEREJE AKIGERA MURI HOME -->
+      <div id="homePendingApprovalSection"
+        style="display: none; background: #ffffff; border: 1px solid #fcd34d; padding: 20px; border-radius: 12px; margin-top: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+          <h3 style="font-size: 16px; color: #92400e; margin: 0;">
+            <i class="fa-solid fa-user-check" style="color: #d97706;"></i> Abakoresha Bategereje Uburenganzira (Pending)
+          </h3>
+          <button onclick="switchTab('users')"
+            style="background: #0284c7; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">
+            Reba Urutonde Rwose
+          </button>
+        </div>
+        <div style="overflow-x: auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Izina</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Guha Uburenganzira</th>
+              </tr>
+            </thead>
+            <tbody id="homePendingTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- AGATEBO K'AMAFARANGA MURI HOME -->
+      <div
+        style="background: #ffffff; border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; margin-top: 25px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+          <h3 style="font-size: 16px; color: #1e293b; margin: 0;">
+            <i class="fa-solid fa-wallet" style="color: #0284c7;"></i> Urutonde rw'Abakoresha n'Amakuru y'Imari
+          </h3>
+          <button id="addHomeUserBtn" onclick="openAddHomeUserModal()"
+            style="display: none; background: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">
+            <i class="fa-solid fa-user-plus"></i> Andika Umuser
+          </button>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table>
+       <thead>
+  <tr>
+    <th>#</th>
+    <th>Izina</th>
+    <th class="admin-only-col">Amafaranga</th>
+    <th class="admin-only-col">Itariki</th>
+    <th class="admin-only-col">Igikorwa</th>
+    <th id="userFinancialAmountHeader" style="display:none;">Amafaranga Yawe</th>
+  </tr>
+</thead>
+<tbody id="homeFinancialTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- AGASANDUKU K'IJANISHA RY'ABAKORESHA -->
+      <div
+        style="background: #ffffff; border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; margin-top: 25px;">
+        <h3 style="font-size: 16px; color: #1e293b; margin-bottom: 15px;">
+          <i class="fa-solid fa-chart-line" style="color: #0284c7;"></i> Imiterere y'Ijanisha ry'Abakoresha (Percentages)
+        </h3>
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+          <div>
+            <div
+              style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 5px;">
+              <span>Abakoresha Bemewe (Active)</span>
+              <span id="activePercentage">0%</span>
+            </div>
+            <div style="background: #f1f5f9; height: 10px; border-radius: 5px; overflow: hidden;">
+              <div id="activeProgressBar"
+                style="background: linear-gradient(90deg, #10b981, #34d399); width: 0%; height: 100%; transition: width 0.5s ease;">
+              </div>
+            </div>
+          </div>
+          <div>
+            <div
+              style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 5px;">
+              <span>Bategereje Approval (Pending)</span>
+              <span id="pendingPercentage">0%</span>
+            </div>
+            <div style="background: #f1f5f9; height: 10px; border-radius: 5px; overflow: hidden;">
+              <div id="pendingProgressBar"
+                style="background: linear-gradient(90deg, #f59e0b, #ec0606e0); width: 0%; height: 100%; transition: width 0.5s ease;">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 2. ANALYTICS TAB -->
+    <div id="analytics" class="content-section">
+      <h2>📊 Imibare n'Ubusesengura (Analytics)</h2>
+      <p style="color: #64748b; font-size: 13px;">Hano hagaragara imibare irambuye n'isesengura ry'imikorere ya system hamwe n'urutonde rw'abakoresha.</p>
+
+      <div class="stats-container" style="margin-top: 20px;">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #6366f1;"><i class="fa-solid fa-user-check"></i></div>
+          <div class="stat-info">
+            <h3 id="activeUsersCount">0</h3>
+            <p style="margin: 0; font-size: 12px; color: #f1da06;">Abakoresha bemewe</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #ef4444;"><i class="fa-solid fa-user-xmark"></i></div>
+          <div class="stat-info">
+            <h3 id="pendingAnalyticsCount">0</h3>
+            <p style="margin: 0; font-size: 12px; color: #f1da06;">abategereje pending</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #0ea5e9;"><i class="fa-solid fa-file-lines"></i></div>
+          <div class="stat-info">
+            <h3 id="totalDocsCount">0</h3>
+            <p style="margin: 0; font-size: 12px; color: #f1da06;">Amadosiye Yashyizweho</p>
+          </div>
+        </div>
+      </div>
+
+      <div
+        style="background: #ffffff; border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; margin-top: 25px; overflow-x: auto;">
+        <h3 style="font-size: 16px; color: #1e293b; margin-bottom: 15px;"><i class="fa-solid fa-list"></i> Incamake y'Abakoresha bose</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Izina</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="homeUserTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 3. USERS (APPROVAL) TAB -->
+    <div id="users" class="content-section">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+        <h2>👥 Urutonde rw'Abakoresha n'Approval</h2>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+          <button onclick="setUserFilter('all')" class="btn-settings" style="background: #475569;">Bose</button>
+          <button onclick="setUserFilter('Pending')" class="btn-settings" style="background: #d97706;">Pending</button>
+          <button onclick="setUserFilter('Active')" class="btn-settings" style="background: #0284c7;">Active</button>
+          <button onclick="syncWithCloud(true)" class="btn-settings" style="background: #10b981;">
+            <i class="fa-solid fa-rotate"></i> Vugurura (Sync)
+          </button>
+        </div>
+      </div>
+      <div style="overflow-x: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Ifoto</th>
+              <th>Izina</th>
+              <th>Email</th>
+              <th>Telefoni</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="userTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 4. SETTINGS & BACKUP TAB -->
+    <div id="settings" class="content-section">
+      <h2>⚙️ Igenamiterere na Backup (Settings & Backup)</h2>
+
+      <div class="profile-card-home"
+        style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; display: flex; align-items: center; gap: 20px; margin-top: 20px;">
+        <div class="profile-avatar-container">
+          <img class="user-profile-avatar"
+            src="https://ui-avatars.com/api/?name=User&background=0284c7&color=fff&size=100" alt="Ifoto y'Umukoresha"
+            style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #38bdf8;">
+        </div>
+        <div class="profile-info-home">
+          <h3 class="user-profile-name" style="color: #1e293b;">Izina ry'Umuser</h3>
+          <p class="user-profile-email" style="color: #64748b; font-size: 13px;">user@example.com</p>
+        </div>
+      </div>
+
+      <div class="settings-grid"
+        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 25px;">
+
+        <!-- Profile Update Card -->
+        <div class="settings-card"
+          style="background:#ffffff; padding:20px; border-radius:12px; border:1px solid #e2e8f0;">
+          <h3 style="margin-bottom: 12px; font-size: 16px;"><i class="fa-solid fa-user-gear"></i> Hindura Umwirondoro</h3>
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label style="font-size: 12px; color: #64748b;">Izina Rishya:</label>
+            <input type="text" id="updateProfileName" placeholder="Andika izina ryawe..."
+              style="width:100%; padding:9px; border:1px solid #cbd5e1; border-radius:8px; margin-top: 4px;">
+          </div>
+          <button onclick="saveUserProfileChanges()" class="btn-settings"><i class="fa-solid fa-check"></i> Bika Impinduka</button>
+        </div>
+
+        <!-- Upload Document Card (Admin Only) -->
+        <div class="settings-card" id="adminDocumentUploadCard"
+          style="background:#ffffff; padding:20px; border-radius:12px; border:1px solid #e2e8f0; display: none;">
+          <h3 style="margin-bottom: 12px; font-size: 16px;"><i class="fa-solid fa-cloud-arrow-up"></i> Shyiramo Inyandiko</h3>
+          <div class="form-group" style="margin-bottom: 12px;">
+            <input type="text" id="docTitleInput" placeholder="Izina ry'inyandiko (Title)..."
+              style="width:100%; padding:9px; border:1px solid #cbd5e1; border-radius:8px; margin-bottom: 8px;">
+            <input type="file" id="browserFileInput" accept=".pdf,image/*,.doc,.docx" style="font-size:12px;">
+          </div>
+          <button onclick="uploadDocumentFromBrowser()" class="btn-settings" style="background:#0284c7;"><i
+              class="fa-solid fa-upload"></i> Emeza na Upload</button>
+          <div id="docUploadProgressText" style="font-size: 11px; color: #0284c7; margin-top: 8px; font-weight: 600;"></div>
+        </div>
+
+        <!-- DATABASE BACKUP & RESTORE CARD (Admin Only) -->
+        <div class="settings-card" id="adminBackupCard"
+          style="background:#f0fdf4; padding:20px; border-radius:12px; border:1px solid #86efac; display: none;">
+          <h3 style="margin-bottom: 8px; font-size: 16px; color: #166534;"><i class="fa-solid fa-database"></i> System Backup & Restore</h3>
+          <p style="font-size: 12px; color: #15803d; margin-bottom: 6px;">Bika kopi y'amakuru yose ya sisitemu (Users, Chat, Amadosiye, Imari) cyangwa uyagarure.</p>
+          <p id="lastBackupInfo" style="font-size: 11px; color: #166534; font-weight: 600; margin-bottom: 12px;">Backup ya nyuma: Ntirakorwa</p>
+
+          <button onclick="exportSystemBackup()" class="btn-settings" style="background:#16a34a; width: 100%; margin-bottom: 12px;">
+            <i class="fa-solid fa-download"></i> Manura Backup (Download JSON)
+          </button>
+
+          <div style="border-top: 1px dashed #86efac; padding-top: 10px;">
+            <label style="font-size: 11px; color: #166534; font-weight: 600; display: block; margin-bottom: 4px;">Garura amakuru uvanye kuri Backup (.json):</label>
+            <input type="file" id="restoreBackupFileInput" accept=".json" onchange="importSystemBackup(event)"
+              style="font-size: 11px; margin-bottom: 8px; width: 100%;">
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Document Viewer List -->
+      <div class="settings-card"
+        style="margin-top: 25px; background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; overflow-x: auto;">
+        <h3 style="margin-bottom: 12px; font-size: 16px;"><i class="fa-solid fa-folder-open"></i> Inyandiko n'Amadosiye Zihari</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Izina ry'Inyandiko</th>
+              <th>Uburemere</th>
+              <th>Itariki</th>
+              <th>Igikorwa</th>
+            </tr>
+          </thead>
+          <tbody id="documentTableBody"></tbody>
+        </table>
+      </div>
+
+      <!-- UI Preferences Card -->
+      <div class="settings-card"
+        style="background:#ffffff; padding:20px; border-radius:12px; border:1px solid #e2e8f0; margin-top: 20px;">
+        <h3 style="margin-bottom: 12px; font-size: 16px;"><i class="fa-solid fa-palette"></i> Amahitamo y'Imiterere (UI)</h3>
+
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label style="font-size: 12px; color: #64748b; display: block; margin-bottom: 4px;">Ibara rya Sisitemu (Theme):</label>
+          <select id="uiThemeSelect" onchange="applyAndSaveUiPreferences()"
+            style="width:100%; padding:9px; border:1px solid #cbd5e1; border-radius:8px; background:#fff; color:#0f172a;">
+            <option value="light">☀️ Light Mode (Urumuri)</option>
+            <option value="dark">🌙 Dark Mode (Ijoro)</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label style="font-size: 12px; color: #64748b; display: block; margin-bottom: 4px;">Ubunini bw'Inyandiko (Font Size):</label>
+          <select id="uiFontSizeSelect" onchange="applyAndSaveUiPreferences()"
+            style="width:100%; padding:9px; border:1px solid #cbd5e1; border-radius:8px; background:#fff; color:#0f172a;">
+            <option value="normal">Bisanzwe (Normal)</option>
+            <option value="large">Binini (Large)</option>
+          </select>
+        </div>
+
+        <button type="button" onclick="resetUiPreferences()" class="btn-settings" style="background:#475569; width:100%;">
+          <i class="fa-solid fa-rotate-left"></i> Subiza ku Bisanzwe
+        </button>
+      </div>
+
+    </div>
+
+    <!-- 5. MESSAGE & ANNOUNCEMENTS TAB -->
+    <div id="messages-announcements" class="content-section">
+      <h2>💬 Message & Announcements</h2>
+      <p style="color: #64748b; font-size: 13px;">Aha ni ho hagaragara ubutumwa bwose (Message) n'amatangazo ya system.</p>
+
+      <div class="dashboard-info-grid"
+        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 25px;">
+
+        <!-- Email Box -->
+        <div class="email-contact-section">
+          <h2 class="email-title"><i class="fa-solid fa-envelope-open-text"></i> Twandikire kuri Email</h2>
+          <p class="email-subtitle">Ufite ikibazo cyangwa ukeneye ubufasha bwihariye? Twoherereze ubutumwa hano:</p>
+          <div class="direct-emails-box">
+            <a href="mailto:ukwitegetseprosper@gmail.com?subject=Ubusabe%20bwa%20Serivisi%20-%20Philosopher"
+              class="email-badge">
+              <i class="fa-solid fa-envelope"></i> ukwitegetseprosper@gmail.com
+            </a>
+          </div>
+          <form class="email-message-form" onsubmit="sendEmailFromPage(event)">
+            <div class="form-row">
+              <input type="text" id="senderName" placeholder="Amazina yawe..." required>
+              <input type="email" id="senderEmail" placeholder="Email yawe..." required>
+            </div>
+            <input type="text" id="emailSubject" placeholder="Impamvu y'ubutumwa (Subject)..." required>
+            <textarea id="emailBodyMessage" rows="4" placeholder="Andika ubutumwa bwawe burambuye hano..."
+              required></textarea>
+            <button type="submit" class="send-email-btn">
+              <i class="fa-solid fa-paper-plane"></i> Ohereza Ubutumwa (Send Email)
+            </button>
+          </form>
+        </div>
+
+        <!-- Message Box -->
+        <div class="info-card"
+          style="background: #1e293b; padding: 20px; border-radius: 14px; color: #fff; height: 420px; display: flex; flex-direction: column;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h3 style="color:#38bdf8; font-size: 15px; margin: 0;">
+              <i class="fa-solid fa-comments"></i> Ibiganiro (Message)
+            </h3>
+            <button id="clearChatBtn" onclick="clearAllChatMessages()"
+              style="display: none; background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;">
+              <i class="fa-solid fa-broom"></i> Siba Byose
+            </button>
+          </div>
+          <div id="lastChatSentInfo" style="font-size: 11px; color: #94a3b8; margin-bottom: 8px;">
+            Ubutumwa buheruka: Nta buriho
+          </div>
+          <select id="chatTargetRole"
+            style="padding: 6px; border-radius: 6px; border: none; font-size: 11px; background: #334155; color: #fff; outline: none; margin-bottom: 8px;">
+            <option value="All">Bose (Itsinda Ryose)</option>
+            <option value="Admin">Admin Gusa</option>
+            <option value="Manager">Manager Gusa</option>
+            <option value="User">User Gusa</option>
+          </select>
+          <div id="chatMessagesBox"
+            style="flex: 1; background: #0f172a; border-radius: 8px; padding: 12px; overflow-y: auto; margin-bottom: 10px; display: flex; flex-direction: column; gap: 10px;">
+          </div>
+
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="chatInputMsg" placeholder="Andika ubutumwa hano..."
+              style="flex: 1; padding: 8px 12px; border-radius: 6px; border: none; outline: none; font-size: 13px; color: #0f172a;"
+              onkeypress="if(event.key==='Enter') sendChatMessage()">
+            <button onclick="sendChatMessage()"
+              style="background: #0284c7; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600;">
+              <i class="fa-solid fa-paper-plane"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Announcements Box -->
+        <div class="info-card"
+          style="background: #1e293b; padding: 20px; border-radius: 14px; color: #fff; height: 420px; display: flex; flex-direction: column;">
+          <h3 style="color:#f59e0b; font-size: 15px; margin-bottom: 10px;">
+            <i class="fa-solid fa-bullhorn"></i> Amatangazo n'Impuruza
+          </h3>
+          <div id="lastAnnouncementSentInfo" style="font-size: 11px; color: #94a3b8; margin-bottom: 8px;">
+            Itangazo riheruka: Nta ririho
+          </div>
+          <select id="announcementTargetRole"
+            style="padding: 6px; border-radius: 6px; border: none; font-size: 11px; background: #334155; color: #fff; outline: none; margin-bottom: 8px;">
+            <option value="All">Bose (Itsinda Ryose)</option>
+            <option value="Admin">Admin Gusa</option>
+            <option value="Manager">Manager Gusa</option>
+            <option value="User">User Gusa</option>
+          </select>
+          <div id="announcementsListContainer"
+            style="flex: 1; background: #0f172a; border-radius: 8px; padding: 10px; overflow-y: auto; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px;">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <div style="display: flex; gap: 6px;">
+              <input type="text" id="announcementTitle" placeholder="Umutwe w'itangazo..."
+                style="flex: 1; padding: 6px 8px; border-radius: 6px; border: none; font-size: 12px; outline: none; color: #0f172a;">
+              <select id="announcementPriority"
+                style="padding: 6px; border-radius: 6px; border: none; font-size: 11px; background: #334155; color: #fff; outline: none;">
+                <option value="Normal">Normal (Bisanzwe)</option>
+                <option value="Urgent">🔥 Urgent (Byihutirwa)</option>
+              </select>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <input type="text" id="announcementBody" placeholder="Andika ubutumwa bw'itangazo..."
+                style="flex: 1; padding: 6px 8px; border-radius: 6px; border: none; font-size: 12px; outline: none; color: #0f172a;"
+                onkeypress="if(event.key==='Enter') postAnnouncement()">
+              <button onclick="postAnnouncement()"
+                style="background: #10b981; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">
+                Shyiraho
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Ibyifuzo cyangwa Ibitekerezo Box -->
+      <div class="info-card"
+        style="background: #1e293b; padding: 20px; border-radius: 14px; color: #fff; height: 420px; display: flex; flex-direction: column; margin-top: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <h3 style="color:#34d399; font-size: 15px; margin: 0;">
+            <i class="fa-solid fa-lightbulb"></i> Ibyifuzo cyangwa Ibitekerezo
+          </h3>
+          <button id="clearFeedbackBtn" onclick="clearAllFeedbackItems()"
+            style="display: none; background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;">
+            <i class="fa-solid fa-broom"></i> Siba Byose
+          </button>
+        </div>
+        <div id="lastFeedbackSentInfo" style="font-size: 11px; color: #94a3b8; margin-bottom: 8px;">
+          Igitekerezo giheruka: Nta gihari
+        </div>
+
+        <div id="feedbackListContainer"
+          style="flex: 1; background: #0f172a; border-radius: 8px; padding: 10px; overflow-y: auto; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px;">
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <select id="feedbackCategory"
+            style="padding: 6px 8px; border-radius: 6px; border: none; font-size: 11px; background: #334155; color: #fff; outline: none;">
+            <option value="Igitekerezo">Igitekerezo (Feedback)</option>
+            <option value="Icyifuzo">Icyifuzo (Suggestion)</option>
+            <option value="Ikibazo / Ubufasha">Ikibazo / Ubufasha</option>
+          </select>
+          <div style="display: flex; gap: 6px;">
+            <input type="text" id="feedbackInputText" placeholder="Andika igitekerezo cyangwa icyifuzo cyawe..."
+              style="flex: 1; padding: 6px 10px; border-radius: 6px; border: none; font-size: 12px; outline: none; color: #0f172a;"
+              onkeypress="if(event.key==='Enter') submitFeedbackItem()">
+            <button onclick="submitFeedbackItem()"
+              style="background: #10b981; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">
+              Ohereza
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Modal yo Kwandikaho Umuser Mushya w'Amafaranga -->
+  <div id="addHomeUserModal"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.75); z-index:99999; justify-content:center; align-items:center;">
+    <div
+      style="background:#ffffff; width:90%; max-width:400px; padding:20px; border-radius:12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+      <h3 style="margin-bottom:15px; font-size:16px; color:#1e293b;"><i class="fa-solid fa-user-pen"></i> Andika Umuser n'Amafaranga</h3>
+      <form onsubmit="saveHomeFinancialUser(event)" style="display: flex; flex-direction: column; gap: 10px;">
+        <div>
+          <label style="font-size: 12px; color: #64748b;">Izina ry'Umuser:</label>
+          <input type="text" id="financialUserName" placeholder="Andika izina..." required
+            style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px; margin-top:4px;">
+        </div>
+        <div>
+          <label style="font-size: 12px; color: #64748b;">Amafaranga (RWF):</label>
+          <input type="number" id="financialUserAmount" placeholder="Urugero: 50000" required
+            style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px; margin-top:4px;">
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px;">
+          <button type="button" onclick="closeAddHomeUserModal()"
+            style="background:#94a3b8; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px;">Funga</button>
+          <button type="submit"
+            style="background:#0284c7; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:600;">Emeza & Bika</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Document Preview Modal -->
+  <div id="documentPreviewModal"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.85); z-index:99999; justify-content:center; align-items:center;">
+    <div
+      style="background:#ffffff; width:90%; max-width:900px; height:80%; border-radius:12px; display:flex; flex-direction:column; overflow:hidden;">
+      <div
+        style="padding:15px 20px; background:#0f172a; color:#ffffff; display:flex; justify-content:space-between; align-items:center;">
+        <h3 id="modalDocTitle" style="margin:0; font-size:15px;">Reba Document</h3>
+        <button onclick="closeDocumentPreview()"
+          style="background:#ef4444; color:white; border:none; padding:6px 14px; border-radius:6px; cursor:pointer;">✕ Funga</button>
+      </div>
+      <div id="modalDocViewer"
+        style="flex:1; background:#f8fafc; display:flex; justify-content:center; align-items:center; overflow:hidden;">
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>

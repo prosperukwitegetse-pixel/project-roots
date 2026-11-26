@@ -1,0 +1,1035 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background: #f4f6f9;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Authentication Page Styles */
+body.auth-body {
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(-45deg, #0284c7, #38bdf8, #10b981, #6366f1);
+  background-size: 400% 400%;
+  animation: rotateGradient 12s ease infinite;
+}
+
+@keyframes rotateGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.auth-container {
+  background-color: #fff;
+  border-radius: 15px;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25);
+  position: relative;
+  overflow: hidden;
+  width: 800px;
+  max-width: 100%;
+  min-height: 540px;
+}
+
+.form-container {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  transition: all 0.6s ease-in-out;
+}
+
+.sign-in-container {
+  left: 0;
+  width: 50%;
+  z-index: 2;
+}
+
+.auth-container.right-panel-active .sign-in-container {
+  transform: translateX(100%);
+}
+
+.sign-up-container {
+  left: 0;
+  width: 50%;
+  opacity: 0;
+  z-index: 1;
+}
+
+.auth-container.right-panel-active .sign-up-container {
+  transform: translateX(100%);
+  opacity: 1;
+  z-index: 5;
+}
+
+.auth-form {
+  background-color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0 40px;
+  height: 100%;
+  text-align: center;
+}
+
+.auth-form h1 {
+  font-weight: 700;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.auth-form span {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.auth-input {
+  background-color: #f4f8f7;
+  border: none;
+  padding: 10px 15px;
+  margin: 6px 0;
+  width: 100%;
+  border-radius: 8px;
+  outline: none;
+  font-size: 13px;
+}
+
+.auth-btn {
+  border-radius: 25px;
+  border: 1px solid #00f2fe;
+  background: linear-gradient(to right, #4facfe, #00f2fe);
+  color: #FFFFFF;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 10px 30px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.auth-btn.ghost {
+  background-color: transparent;
+  border-color: #FFFFFF;
+}
+
+.overlay-container {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  transition: transform 0.6s ease-in-out;
+  z-index: 100;
+}
+
+.auth-container.right-panel-active .overlay-container {
+  transform: translateX(-100%);
+}
+
+.overlay {
+  background: linear-gradient(to right, #00f2fe, #4facfe);
+  color: #FFFFFF;
+  position: relative;
+  left: -100%;
+  height: 100%;
+  width: 200%;
+  transform: translateX(0);
+  transition: transform 0.6s ease-in-out;
+}
+
+.auth-container.right-panel-active .overlay {
+  transform: translateX(50%);
+}
+
+.overlay-panel {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0 40px;
+  text-align: center;
+  top: 0;
+  height: 100%;
+  width: 50%;
+}
+
+.overlay-left {
+  transform: translateX(-20%);
+}
+
+.auth-container.right-panel-active .overlay-left {
+  transform: translateX(0);
+}
+
+.overlay-right {
+  right: 0;
+  transform: translateX(0);
+}
+
+.auth-container.right-panel-active .overlay-right {
+  transform: translateX(20%);
+}
+
+
+
+
+
+/* Guhindura uburyo Sidebar yimuka (moving) cyangwa yaguka igihe uri kuri hover */
+.sidebar {
+  width: 260px;
+  background-color: #1a69e7;
+  color: #eb3030;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Bituma yimuka cyangwa yaguka neza cyane */
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Iyo mouse iri kuri sidebar ubwayo iragenda gato cyangwa igatera imbere (moving effect) */
+.sidebar:hover {
+  transform: translateX(5px);
+  /* Yimukira iburyo gato cyangwa yaguka */
+  width: 275px;
+  /* Ushobora no kuyongerera ubugari buhoro buhoro */
+}
+
+/* Imiterere ya button n'ukuntu ziba zimeze kuri hover */
+.sidebar-menu button {
+  background: transparent;
+  color: #0661df;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  /* Bituma ihinduka buhoro buhoro kandi neza */
+}
+
+/* Iyo winze cyangwa uri kuri button (Interactive Button Hover Effects) */
+.sidebar-menu button:hover {
+  background: linear-gradient(135deg, hsla(108, 91%, 42%, 0.733), #0284c7);
+  color: #ffffff;
+  transform: translateX(8px);
+  /* Buto ubwayo iranyerera (moves) igana iburyo gato */
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+}
+
+/* Buto iri active (ifunguye ubu) */
+.sidebar-menu button.active {
+  background: #0284c7;
+  color: #0d11e0;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+}
+
+
+
+
+
+
+.btn-logout {
+  background-color: #ef4444;
+  color: white;
+  border-radius: 8px;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+.content-section {
+  display: none;
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.content-section.active {
+  display: block;
+}
+
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: #1577da;
+  border: 1px solid #eb0acd;
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.stat-icon {
+  width: 45px;
+  height: 45px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: white;
+}
+
+.stat-info h3 {
+  font-size: 22px;
+  color: #1e293b;
+  margin-bottom: 2px;
+}
+
+.stat-info p {
+  font-size: 12px;
+  color: #64748b;
+  margin: 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  margin-top: 10px;
+}
+
+th {
+  background-color: #f8fafc;
+  color: #64748b;
+  font-size: 12px;
+  padding: 10px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+td {
+  padding: 10px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+  font-size: 13px;
+}
+
+.badge-active {
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.badge-pending {
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.btn-settings {
+  background: #0284c7;
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.top-header {
+  position: fixed;
+  top: 20px;
+  right: 30px;
+  left: 290px;
+  /* Bitewe n'ubugari bwa sidebar yawe */
+  z-index: 999;
+  background: #ffffff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+
+body {
+  background: #f4f6f9;
+  display: flex;
+  min-height: 100vh;
+  margin: 0;
+  /* Twakuyeho overflow: hidden kugira ngo paji ibashe kugenda */
+}
+
+/* Sidebar iguma igendana nawe (Sticky) kandi ikagira scroll yayo bwite */
+.sidebar {
+  width: 260px;
+  height: 100vh;
+  /* Ifata uburebure bwose bwa screen */
+  position: sticky;
+  /* Ibi bituma igendana nawe igihe uri gukora scroll */
+  top: 0;
+  left: 0;
+  background-color: #1e293b;
+  color: #05f005;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  overflow-y: auto;
+  /* Niba harimo menu nyinshi, nayo ubwayo izajya ikora scroll */
+  transition: transform 0.3s ease, width 0.3s ease, box-shadow 0.3s ease;
+  z-index: 1000;
+}
+
+/* Iyo uri gukora scroll (iyi class izashyirwaho na JavaScript), sidebar irimuka gato cyangwa ikagira umucyo */
+.sidebar.scrolling-move {
+  transform: translateY(8px);
+  /* Yimuka gato imanuka cyangwa izamuka mu buryo bwa animation */
+  box-shadow: 6px 0 20px rgba(2, 132, 199, 0.35);
+  border-right: 2px solid #38bdf8;
+}
+
+/* Main content ikomeza kugenda neza iruhande rwayo */
+.main-content {
+  flex-grow: 1;
+  padding: 30px;
+  padding-top: 100px;
+  /* Kuko top-header ari fixed hejuru */
+}
+
+/* =========================================================
+   AGACARD KO GUFUNGURA / GUFUNGA SIDEBAR (TOGGLE CARD)
+   ========================================================= */
+.sidebar-toggle-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: #ace708;
+  border: 1px solid #0b76f8;
+  padding: 8px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+  margin-bottom: 15px;
+}
+
+/* Hover Effect ku gacard */
+.sidebar-toggle-card:hover {
+  background: linear-gradient(135deg, #0284c7, #38bdf8);
+  border-color: #0284c7;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(2, 132, 199, 0.3);
+}
+
+.sidebar-toggle-card:hover .toggle-card-text span,
+.sidebar-toggle-card:hover .toggle-card-text small {
+  color: #ffffff;
+}
+
+.sidebar-toggle-card:hover .toggle-card-icon {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.toggle-card-icon {
+  width: 36px;
+  height: 36px;
+  background: #e0f2fe;
+  color: #0284c7;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.toggle-card-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.toggle-card-text span {
+  font-size: 13px;
+  font-weight: 700;
+  color: #df0a0a;
+}
+
+.toggle-card-text small {
+  font-size: 10px;
+  color: #64748b;
+}
+
+/* =========================================================
+   UKUNTU SIDEBAR YIHISHA CYANGWA IGASOHOKA (SLIDE EFFECT)
+   ========================================================= */
+.sidebar {
+  width: 260px;
+  height: 100vh;
+  position: fixed;
+  /* Bituma ibasha gusohoka no kwihisha neza */
+  top: 0;
+  left: -260px;
+  /* Ihera yihishe ku ruhande rw'ibumoso */
+  background-color: #1e293b;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  overflow-y: auto;
+  transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+  z-index: 2000;
+}
+
+/* Iyo sidebar ifunguwe (ifite class ya 'open') */
+.sidebar.open {
+  left: 0;
+  box-shadow: 8px 0 25px rgba(15, 23, 42, 0.4);
+}
+
+/* Main content na top-header byikwiza neza iyo sidebar ifunze cyangwa ifunguye */
+.main-content {
+  flex-grow: 1;
+  padding: 30px;
+  margin-left: 0;
+  transition: margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+}
+
+.main-content.shifted {
+  margin-left: 260px;
+}
+
+.top-header {
+  position: relative;
+  left: 0;
+  right: 0;
+  top: 0;
+  width: 100%;
+}
+
+/* =========================================================
+   CSS Y'ISAHA IRI FIXED N'ANIMATION Y'AMAGAMBO (PHILOSOPHER)
+   ========================================================= */
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #06dd2a;
+  margin: 0;
+  padding: 0;
+  color: #1571f1;
+}
+
+/* Agasanduku gakubiye isaha n'amagambo kuri fixed hejuru iburyo */
+.fixed-clock-banner {
+  position: fixed;
+  top: 20px;
+  right: 30px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+/* Agasanduku k'isaha */
+.fixed-clock-box {
+  background: #ffffff;
+  border: 1px solid #e907b8;
+  padding: 8px 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(30, 7, 238, 0.918);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.fixed-clock-box i {
+  font-size: 18px;
+  color: #0284c7;
+}
+
+.clock-time {
+  font-size: 16px;
+  font-weight: 700;
+  font-family: monospace;
+  color: #e93609;
+}
+
+.clock-date {
+  font-size: 10px;
+  color: #090df0;
+  font-weight: 500;
+}
+
+/* Aho amagambo ya animation yicara */
+.animated-text-container {
+  height: 28px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* Imiterere y'amagambo ari mu bara ry'ubururu (blue) n'animation yayo */
+.animated-badge {
+  background: linear-gradient(135deg, #0284c7, #38bdf8);
+  color: #ee0606;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  animation: fadeInOut 3s ease-in-out infinite;
+}
+
+/* Animation ihindura amagambo buhoro buhoro */
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  20% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  80% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+
+/* =========================================================
+   CSS Y'ISAHA IRI FIXED N'URUTONDE RWA ANIMATION (PHILOSOPHER)
+   ========================================================= */
+
+/* Isaha iri Fixed hejuru iburyo */
+.fixed-clock-box {
+  position: fixed;
+  top: 20px;
+  right: 25px;
+  background: #e70909;
+  border: 2px solid #0284c7;
+  padding: 10px 18px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(158, 241, 2, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 9999;
+}
+
+.fixed-clock-box i {
+  font-size: 20px;
+  color: #0284c7;
+}
+
+.clock-time {
+  font-size: 17px;
+  font-weight: 700;
+  font-family: monospace;
+  color: #0369a1;
+}
+
+.clock-date {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* Agasanduku gafata screen yose y'urutonde */
+.fullscreen-list-wrapper {
+  width: 100%;
+  max-width: 900px;
+  margin: 80px auto 0 auto;
+  padding: 20px;
+}
+
+.page-title {
+  text-align: center;
+  color: #0369a1;
+  font-size: 26px;
+  margin-bottom: 25px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Urutonde (List) */
+.animated-services-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+/* Buri kantu kari muri List kari muri Blue kandi gakora Animation */
+.service-item {
+  background: linear-gradient(135deg, #0284c7, #38bdf8);
+  color: #3af30c;
+  padding: 18px 25px;
+  border-radius: 14px;
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 6px 15px rgba(2, 132, 199, 0.25);
+  opacity: 0;
+  transform: translateX(-40px);
+  animation: slideInBlue 0.7s ease forwards, pulseBlue 3s ease-in-out infinite;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+/* Gutuma biza bikurikirana kimwe ku kindi */
+.service-item:nth-child(1) {
+  animation-delay: 0.1s, 0.8s;
+}
+
+.service-item:nth-child(2) {
+  animation-delay: 0.3s, 1.1s;
+}
+
+.service-item:nth-child(3) {
+  animation-delay: 0.5s, 1.4s;
+}
+
+.service-item:nth-child(4) {
+  animation-delay: 0.7s, 1.7s;
+}
+
+.service-item:nth-child(5) {
+  animation-delay: 0.9s, 2.0s;
+}
+
+/* Hover Effect iyo ugejejeho mouse */
+.service-item:hover {
+  transform: scale(1.02) translateX(8px);
+  background: linear-gradient(135deg, #0369a1, #0284c7);
+  box-shadow: 0 10px 25px rgba(2, 132, 199, 0.45);
+}
+
+.item-number {
+  background: #ffffff;
+  color: #0284c7;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+/* Keyframes z'Animation */
+@keyframes slideInBlue {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulseBlue {
+
+  0%,
+  100% {
+    box-shadow: 0 6px 15px rgba(2, 132, 199, 0.25);
+  }
+
+  50% {
+    box-shadow: 0 8px 25px rgba(56, 189, 248, 0.6);
+  }
+}
+
+/* Section ya Email Contact */
+.email-contact-section {
+  width: 100%;
+  max-width: 900px;
+  margin: 20px auto;
+  background: #0f172a;
+  border: 2px solid #38bdf8;
+  border-radius: 16px;
+  padding: 25px;
+  box-shadow: 0 10px 25px rgba(2, 132, 199, 0.25);
+  text-align: center;
+}
+
+.email-title {
+  color: #38bdf8;
+  font-size: 20px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.email-subtitle {
+  color: #cbd5e1;
+  font-size: 13px;
+  margin-bottom: 18px;
+}
+
+.direct-emails-box {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.email-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #1e293b;
+  border: 1px solid #38bdf8;
+  color: #ffffff;
+  text-decoration: none;
+  padding: 8px 18px;
+  border-radius: 25px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.email-badge:hover {
+  background: #0284c7;
+  transform: scale(1.05);
+}
+
+.email-message-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+.email-message-form .form-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.email-message-form input,
+.email-message-form textarea {
+  width: 100%;
+  flex: 1;
+  min-width: 220px;
+  padding: 12px 15px;
+  border-radius: 10px;
+  border: 1px solid #334155;
+  background: #1e293b;
+  color: #ffffff;
+  font-size: 14px;
+  outline: none;
+}
+
+.email-message-form input:focus,
+.email-message-form textarea:focus {
+  border-color: #38bdf8;
+}
+
+.send-email-btn {
+  background: linear-gradient(135deg, #0284c7, #38bdf8);
+  color: #ffffff;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 25px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.send-email-btn:hover {
+  background: linear-gradient(135deg, #0369a1, #0284c7);
+  transform: translateY(-2px);
+}
+
+
+
+/* =========================================================
+   UI PREFERENCES: DARK MODE & FONT SCALING
+   ========================================================= */
+body.dark-theme {
+  background: #0b1120;
+  color: #f8fafc;
+}
+
+body.dark-theme .top-header,
+body.dark-theme .content-section,
+body.dark-theme .stat-card,
+body.dark-theme .settings-card,
+body.dark-theme .profile-card-home,
+body.dark-theme .sidebar-toggle-card,
+body.dark-theme #home > div[style*="background: #ffffff"],
+body.dark-theme #analytics > div[style*="background: #ffffff"] {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+body.dark-theme h2,
+body.dark-theme h3,
+body.dark-theme td,
+body.dark-theme .user-profile-name,
+body.dark-theme .toggle-card-text span {
+  color: #f8fafc !important;
+}
+
+body.dark-theme th {
+  background-color: #0f172a;
+  color: #cbd5e1;
+  border-bottom-color: #334155;
+}
+
+body.dark-theme td {
+  border-bottom-color: #334155;
+}
+
+body.dark-theme tbody tr:hover {
+  background-color: #273549;
+}
+
+body.dark-theme input,
+body.dark-theme select,
+body.dark-theme textarea {
+  background: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: #475569 !important;
+}
+
+/* Font Size Scaling */
+body.font-large {
+  font-size: 16px;
+}
+
+body.font-large td,
+body.font-large th,
+body.font-large button,
+body.font-large input,
+body.font-large select {
+  font-size: 15px !important;
+}
+
+
+/* Kwimura buto ya Logout hejuru ho gato muri sidebar */
+.sidebar .btn-logout {
+  margin-bottom: 60px;
+  margin-top: 16px;
+}
+
+
+/* Agasanduku kerekana umukoresha winjiye (User Session Badge) */
+.user-session-badge {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    background: #0f172a;
+    border: 1.5px solid #38bdf8;
+    padding: 10px 18px;
+    border-radius: 30px;
+    box-shadow: 0 6px 18px rgba(2, 132, 199, 0.25);
+    margin: 10px 0 20px auto;
+    width: fit-content;
+    flex-wrap: wrap;
+}
+
+#loggedUserName {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+#loggedUserRole {
+    background: rgba(56, 189, 248, 0.18);
+    color: #38bdf8;
+    border: 1px solid #38bdf8;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.user-session-badge button {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #ffffff;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.user-session-badge button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.45);
+}

@@ -1,0 +1,834 @@
+
+<!DOCTYPE html>
+<html lang="rw">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Philosopher - Services</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body,
+        html {
+            background: #f0f9ff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        /* Isaha iri Fixed hejuru iburyo */
+        .fixed-clock-box {
+            position: fixed;
+            top: 20px;
+            right: 25px;
+            background: #ffffff;
+            border: 2px solid #0284c7;
+            padding: 10px 18px;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(237, 129, 5, 0.904);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 9999;
+        }
+
+        .fixed-clock-box i {
+            font-size: 20px;
+            color: #0284c7;
+        }
+
+        .clock-time {
+            font-size: 17px;
+            font-weight: 700;
+            font-family: monospace;
+            color: #860552;
+        }
+
+        .clock-date {
+            font-size: 11px;
+            color: hsl(215, 79%, 48%);
+            font-weight: 500;
+        }
+
+        .hero-photo {
+            max-width: 180px;
+            border-radius: 16px;
+            margin-top: 60px;
+            box-shadow: 0 8px 20px rgba(244, 7, 228, 0.15);
+            object-fit: cover;
+        }
+
+        /* Agasanduku k'urutonde rwa Serivisi */
+        .fullscreen-list-wrapper {
+            width: 100%;
+            max-width: 900px;
+            margin-top: 30px;
+        }
+
+        .page-title {
+            text-align: center;
+            color: #0369a1;
+            font-size: 26px;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .animated-services-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 100%;
+        }
+
+        .service-item {
+            background: linear-gradient(135deg, #0284c7, #38bdf8);
+            color: #ffffff;
+            padding: 18px 25px;
+            border-radius: 14px;
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 6px 15px rgba(2, 132, 199, 0.25);
+            opacity: 0;
+            transform: translateX(-40px);
+            animation: slideInBlue 0.7s ease forwards, pulseBlue 3s ease-in-out infinite;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .service-item:nth-child(1) {
+            animation-delay: 0.1s, 0.8s;
+        }
+
+        .service-item:nth-child(2) {
+            animation-delay: 0.3s, 1.1s;
+        }
+
+        .service-item:nth-child(3) {
+            animation-delay: 0.5s, 1.4s;
+        }
+
+        .service-item:nth-child(4) {
+            animation-delay: 0.7s, 1.7s;
+        }
+
+        .service-item:nth-child(5) {
+            animation-delay: 0.9s, 2.0s;
+        }
+
+        .service-item:hover {
+            transform: scale(1.02) translateX(8px);
+            background: linear-gradient(135deg, #0369a1, #0284c7);
+            box-shadow: 0 10px 25px rgba(2, 132, 199, 0.45);
+        }
+
+        .item-number {
+            background: #ffffff;
+            color: #0284c7;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        @keyframes slideInBlue {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes pulseBlue {
+
+            0%,
+            100% {
+                box-shadow: 0 6px 15px rgba(2, 132, 199, 0.25);
+            }
+
+            50% {
+                box-shadow: 0 8px 25px rgba(56, 189, 248, 0.6);
+            }
+        }
+
+        /* Slider y'amafoto ya Ba Admin */
+        .admin-slider-container {
+            width: 100%;
+            max-width: 900px;
+            height: 270px;
+            background: linear-gradient(135deg, #04e222, hsl(250, 94%, 47%));
+            border: 2px solid #38bdf8;
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(2, 132, 199, 0.3);
+            margin: 30px auto;
+        }
+
+        .admin-slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .admin-slide.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .admin-slide img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #38bdf8;
+            box-shadow: 0 5px 15px rgba(56, 189, 248, 0.4);
+            margin-bottom: 12px;
+        }
+
+        .admin-name {
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 700;
+            text-transform: capitalize;
+        }
+
+        .admin-role {
+            color: #38bdf8;
+            font-size: 15px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Section ya Nimero za Telefoni */
+        .admin-contacts-section {
+            width: 100%;
+            max-width: 900px;
+            margin: 20px auto;
+            background: hsl(311, 63%, 63%);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            text-align: center;
+        }
+
+        .contacts-title {
+            color: #38bdf8;
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .contacts-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .contact-card {
+            background: #0ec387;
+            border: 1px solid #f25d07;
+            padding: 15px 20px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 240px;
+        }
+
+        .contact-name {
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .admin-phone-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #10b981;
+            border: 1px solid #38bdf8;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 6px 16px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .admin-phone-btn:hover {
+            background: #0284c7;
+            transform: scale(1.05);
+        }
+
+        /* Buto ya Next ijya kuri index.html */
+        .next-page-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin: 30px 0 40px 0;
+        }
+
+        .next-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #0284c7, #38bdf8);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 14px 36px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            box-shadow: 0 6px 20px rgba(2, 132, 199, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .next-btn:hover {
+            background: linear-gradient(135deg, #0369a1, #0284c7);
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 10px 25px rgba(2, 132, 199, 0.6);
+        }
+
+        /* Amafoto 5 yose agizwe nka body zangana na section ya email (zifite ubunini n'imiterere nziza) */
+        .fullscreen-banner-img {
+            width: 100%;
+            max-width: 900px;
+            height: 380px; /* Ubuhagarike bungana n'iza email sections kugira ngo zibe zingana neza */
+            object-fit: contain; /* Bituma ifoto igaragara yose uko yakabaye nta gice cy'ingenzi cyatakara */
+            border-radius: 16px;
+            margin: 20px auto;
+            display: block;
+            background: #0f172a;
+            box-shadow: 0 10px 25px rgba(2, 132, 199, 0.25);
+            border: 2px solid #38bdf8;
+        }
+
+        /* Section ya Email Contact */
+        .email-contact-section {
+            width: 100%;
+            max-width: 900px;
+            margin: 20px auto;
+            background: #0f172a;
+            border: 2px solid #38bdf8;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(2, 132, 199, 0.25);
+            text-align: center;
+        }
+
+        .email-title {
+            color: #38bdf8;
+            font-size: 20px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .email-subtitle {
+            color: #cbd5e1;
+            font-size: 13px;
+            margin-bottom: 18px;
+        }
+
+        .direct-emails-box {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .email-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #1e293b;
+            border: 1px solid #38bdf8;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 8px 18px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .email-badge:hover {
+            background: #0284c7;
+            transform: scale(1.05);
+        }
+
+        .email-message-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        .email-message-form .form-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .email-message-form input,
+        .email-message-form textarea {
+            width: 100%;
+            flex: 1;
+            min-width: 220px;
+            padding: 12px 15px;
+            border-radius: 10px;
+            border: 1px solid #334155;
+            background: #1e293b;
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .email-message-form input:focus,
+        .email-message-form textarea:focus {
+            border-color: #38bdf8;
+        }
+
+        .send-email-btn {
+            background: linear-gradient(135deg, #0284c7, #38bdf8);
+            color: #ffffff;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .send-email-btn:hover {
+            background: linear-gradient(135deg, #0369a1, #0284c7);
+            transform: translateY(-2px);
+        }
+
+        /* Section ya Location */
+        .location-section {
+            width: 100%;
+            max-width: 900px;
+            margin: 20px auto;
+            background: #be0ecb;
+            border: 2px solid #38bdf8;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(3, 106, 158, 0.25);
+            text-align: center;
+        }
+
+        .location-title {
+            color: #38bdf8;
+            font-size: 20px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .location-subtitle {
+            color: #cbd5e1;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .location-card {
+            background: #06cc83;
+            border: 1px solid #df0ab1;
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            color: hsl(0, 94%, 45%);
+            text-align: left;
+        }
+
+        .location-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .map-container {
+            width: 100%;
+            margin-top: 5px;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+
+/* Amafoto yose yujuzwa neza muri box yayo nta ibara ry'umukara risigayemo */
+        .fullscreen-banner-img {
+            width: 100%;
+            max-width: 900px;
+            height: 380px; 
+            object-fit: fill; /* Cyangwa ukoreshe object-fit: cover bitewe n'ukuntu wifuza ko yuzuza neza uwo mwanya */
+            border-radius: 16px;
+            margin: 20px auto;
+            display: block;
+            background: transparent; /* Nta bara ry'umukara ryongeye kugaragara inyuma y'ifoto */
+            box-shadow: 0 10px 25px rgba(2, 132, 199, 0.25);
+            border: 2px solid #38bdf8;
+        }
+
+        /* Amafoto yagabanijwe gato ku mpande zose kugira ngo hasigaremo umwanya w'ibara ry'icyatsi */
+        .fullscreen-banner-img {
+            width: calc(100% - 60px); /* Bigabanya ubugari kugira ngo hasigare umwanya ku mpande */
+            max-width: 840px; /* Bituma iguma mu bunini bujyanye na 900px y'izindi zose */
+            height: 380px;
+            object-fit: contain; /* Cyangwa koresha cover niba ushaka ko yuzura neza */
+            border-radius: 16px;
+            margin: 25px auto;
+            display: block;
+            background: #10b981; /* Ibara ry'icyatsi kibisi ku mpanzwe hasigara */
+            padding: 12px; /* Umwanya w'imbere uzengurutse ifoto */
+            box-shadow: 0 10px 25px rgba(2, 132, 199, 0.25);
+            border: 2px solid #38bdf8;
+        }
+
+
+        /* Amafoto asigiwe umwanya mutoya ku mpande (nk'imetero 1) wuzuye ibara ry'icyatsi */
+        .fullscreen-banner-img {
+            width: calc(100% - 20px); /* Igabanya ubugari ho gato cyane ngo hasigare umwanya muto */
+            max-width: 880px; 
+            height: 380px;
+            object-fit: contain; 
+            border-radius: 14px;
+            margin: 20px auto;
+            display: block;
+            background: #10b981; /* Ibara ry'icyatsi kibisi ku mpande z'ifoto */
+            padding: 8px; /* Umwanya w'icyatsi uzengurutse ifoto ku mpande zose */
+            box-shadow: 0 10px 25px rgba(2, 132, 199, 0.25);
+            border: 2px solid #38bdf8;
+        }
+
+    </style>
+</head>
+
+
+
+<body>
+
+    <!-- Isaha iri Fixed hejuru iburyo -->
+    <div class="fixed-clock-box">
+        <i class="fa-regular fa-clock"></i>
+        <div>
+            <div id="liveClock" class="clock-time">00:00:00</div>
+            <div id="liveDate" class="clock-date">Kuwa...</div>
+        </div>
+    </div>
+
+    <!-- Ifoto ya 1 -->
+    <img src="./image/IMG-20261116-WA3939.jpg" alt="Philosopher Logo" class="fullscreen-banner-img"
+        onerror="this.style.display='none'">
+
+    <!-- Ifoto ya 2 -->
+    <img src="./image/file_000000004fb4821195653a9912572506.png" alt="photos" class="fullscreen-banner-img">
+
+    <!-- Ifoto ya 3 -->
+    <img src="./image/IMG-20261119-WA0108(1)[1].jpg" alt="my picture" class="fullscreen-banner-img">
+
+    <!-- Ifoto ya 4 -->
+    <img src="./image/Screenshot_20261021-122914_1.jpg" alt="my photo" class="fullscreen-banner-img">
+
+    <!-- Ifoto ya 5 -->
+    <img src="./image/IMG-20261116-WA0054.jpg" alt="my photo" class="fullscreen-banner-img">
+
+    <!-- Urutonde rwa Serivisi -->
+    <div class="fullscreen-list-wrapper">
+        <h1 class="page-title">Serivisi Zitangwa (Philosopher Services)</h1>
+
+        <ul class="animated-services-list">
+            <li class="service-item">
+                <span class="item-number">1</span>
+                <i class="fa-solid fa-headset"></i>
+                <span>Application Supports</span>
+            </li>
+            <li class="service-item">
+                <span class="item-number">2</span>
+                <i class="fa-solid fa-file-signature"></i>
+                <span>Recommendation Letter</span>
+            </li>
+            <li class="service-item">
+                <span class="item-number">3</span>
+                <i class="fa-solid fa-certificate"></i>
+                <span>English Certificate Proficiency</span>
+            </li>
+            <li class="service-item">
+                <span class="item-number">4</span>
+                <i class="fa-solid fa-laptop-code"></i>
+                <span>Teaching Online Course</span>
+            </li>
+            <li class="service-item">
+                <span class="item-number">5</span>
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>Application for University</span>
+            </li>
+            <li class="service-item">
+                <span class="item-number">6</span>
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>Irembo sevices</span>
+            </li>
+            <li class="service-item">
+                <span class="item-number">7</span>
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>Road traffic rules teaching</span>
+            </li>
+            <li class="service-item">
+                <span class="item-number">8</span>
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>Teaching computer skills and ICT</span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Amafoto ya Ba Admin (Slider) -->
+    <div class="admin-slider-container">
+        <div class="admin-slide active">
+            <img src="./image/file_000000004fb4821195653a9912572506.png" alt="Admin 1"
+                onerror="this.src='https://ui-avatars.com/api/?name=Prosper+Ukwitegetse&background=0284c7&color=fff&size=150'">
+            <div class="admin-name">Prosper Ukwitegetse</div>
+            <div class="admin-role">Chief Administrator</div>
+        </div>
+        <div class="admin-slide">
+            <img src="./image/IMG-20261116-WA3939.jpg" alt="Admin 2">
+            <div class="admin-name">Prosper Ukwitegetse</div>
+            <div class="admin-role">System Manager</div>
+        </div>
+        <div class="admin-slide">
+            <img src="./image/franco.png" alt="Admin 3">
+            <div class="admin-name">Sibomana Jean Franco</div>
+            <div class="admin-role">Technical Support Lead</div>
+        </div>
+    </div>
+
+    <!-- Nimero za Telefoni za Ba Admin -->
+    <div class="admin-contacts-section">
+        <h2 class="contacts-title"><i class="fa-solid fa-address-book"></i> Hamagara Ba Admin</h2>
+
+        <div class="contacts-grid">
+            <div class="contact-card">
+                <span class="contact-name">Prosper Ukwitegetse</span>
+                <a href="tel:+250791773822" class="admin-phone-btn">
+                    <i class="fa-solid fa-phone-volume"></i> +250 791 773 822
+                </a>
+                <a href="tel:*182*8*1*676503%23" class="admin-phone-btn">
+                    <i class="fa-solid fa-money-bill-wave"></i> *182*8*1*676503#
+                </a>
+            </div>
+
+            <div class="contact-card">
+                <span class="contact-name">Prosper Ukwitegetse (MTN)</span>
+                <a href="tel:+250780772114" class="admin-phone-btn">
+                    <i class="fa-solid fa-phone-volume"></i> +250 780 772 114
+                </a>
+                <a href="tel:*182*8*1*484899%23" class="admin-phone-btn">
+                    <i class="fa-solid fa-money-bill-wave"></i> *182*8*1*484899#
+                </a>
+            </div>
+
+            <div class="contact-card">
+                <span class="contact-name">Sibomana Jean Franco</span>
+                <a href="tel:+250739027334" class="admin-phone-btn">
+                    <i class="fa-solid fa-phone-volume"></i> +250 739 027 334
+                </a>
+                <a href="tel:+250780772114" class="admin-phone-btn">
+                    <i class="fa-solid fa-phone-volume"></i> +250 780 772 114
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Section yo Kohereza Email (Email Contact Body) -->
+    <div class="email-contact-section">
+        <h2 class="email-title"><i class="fa-solid fa-envelope-open-text"></i> Twandikire kuri Email</h2>
+        <p class="email-subtitle">Ufite ikibazo cyangwa ukeneye ubufasha bwihariye? Twoherereze ubutumwa hano:</p>
+
+        <!-- Links za Email z'ako kanya (Direct Email) -->
+        <div class="direct-emails-box">
+            <a href="mailto:ukwitegetseprosper@gmail.com?subject=Ubusabe%20bwa%20Serivisi%20-%20Philosopher"
+                class="email-badge">
+                <i class="fa-solid fa-envelope"></i> prosperukwitegetse@gmail.com
+            </a>
+        </div>
+
+        <!-- Form yoroshye yo kwandika ubutumwa bwa Email -->
+        <form class="email-message-form" onsubmit="sendEmailFromPage(event)">
+            <div class="form-row">
+                <input type="text" id="senderName" placeholder="Amazina yawe..." required>
+                <input type="email" id="senderEmail" placeholder="Email yawe..." required>
+            </div>
+            <input type="text" id="emailSubject" placeholder="Impamvu y'ubutumwa (Subject)..." required>
+            <textarea id="emailBodyMessage" rows="4" placeholder="Andika ubutumwa bwawe burambuye hano..."
+                required></textarea>
+            <button type="submit" class="send-email-btn">
+                <i class="fa-solid fa-paper-plane"></i> Ohereza Ubutumwa (Send Email)
+            </button>
+        </form>
+    </div>
+
+
+
+    <!-- Section yo Kohereza Email (Email Contact Body) -->
+    <div class="email-contact-section">
+        <h2 class="email-title"><i class="fa-solid fa-envelope-open-text"></i> Twandikire kuri Email</h2>
+        <p class="email-subtitle">Ufite ikibazo cyangwa ukeneye ubufasha bwihariye? Twoherereze ubutumwa hano:</p>
+
+        <!-- Links za Email z'ako kanya (Direct Email) -->
+        <div class="direct-emails-box">
+            <a href="mailto:sibomanafranco60@gmail.com?subject=Ubusabe%20bwa%20Serivisi%20-%20Philosopher"
+                class="email-badge">
+                <i class="fa-solid fa-envelope"></i> sibomanafranco60@gmail.com
+            </a>
+        </div>
+
+        <!-- Form yoroshye yo kwandika ubutumwa bwa Email -->
+        <form class="email-message-form" onsubmit="sendEmailFromPage(event)">
+            <div class="form-row">
+                <input type="text" id="senderName" placeholder="Amazina yawe..." required>
+                <input type="email" id="senderEmail" placeholder="Email yawe..." required>
+            </div>
+            <input type="text" id="emailSubject" placeholder="Impamvu y'ubutumwa (Subject)..." required>
+            <textarea id="emailBodyMessage" rows="4" placeholder="Andika ubutumwa bwawe burambuye hano..."
+                required></textarea>
+            <button type="submit" class="send-email-btn">
+                <i class="fa-solid fa-paper-plane"></i> Ohereza Ubutumwa (Send Email)
+            </button>
+        </form>
+    </div>
+
+
+    <!-- Section ya Location (Aho duherereye) -->
+    <div class="location-section">
+        <h2 class="location-title"><i class="fa-solid fa-location-dot"></i> Aho Duherereye (Location)</h2>
+        <p class="location-subtitle">Twifatanye natwe cyangwa musure office yacu kuri aderesi ikurikira:</p>
+
+        <div class="location-card">
+            <div class="location-info">
+                <p><i class="fa-solid fa-map-pin" style="color: #38bdf8;"></i> <b>Aderesi:</b> Kigali, Rwanda (nyagatare
+                    / nyagatare)</p>
+                <p><i class="fa-solid fa-clock" style="color: #38bdf8;"></i> <b>Amasaha y'Akazi:</b> Kuwa Mbere - Kuwa
+                    Gatandatu (8:00 AM - 6:00 PM)</p>
+            </div>
+
+            <!-- Google Map Iframe -->
+            <div class="map-container">
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3987.52554274384!2d30.0588!3d-1.9441!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMWKwNTcnMzguOCJTIDMsM8KwMDMnMzEuNyJF!5e0!3m2!1sen!2srw!4v1600000000000!5m2!1sen!2srw"
+                    width="100%" height="200" style="border:0; border-radius: 10px;" allowfullscreen="" loading="lazy">
+                </iframe>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Button ya Next ihuza neza na index.html -->
+    <div class="next-page-container">
+        <a href="index.html" class="next-btn">
+            Next (Injira muri Sisitemu) <i class="fa-solid fa-arrow-right"></i>
+        </a>
+    </div>
+
+
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            function updateFixedClock() {
+                const now = new Date();
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const seconds = String(now.getSeconds()).padStart(2, '0');
+
+                const clockElem = document.getElementById("liveClock");
+                const dateElem = document.getElementById("liveDate");
+
+                if (clockElem) clockElem.innerText = `${hours}:${minutes}:${seconds}`;
+                if (dateElem) {
+                    dateElem.innerText = now.toLocaleDateString('rw-RW', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                }
+            }
+
+            updateFixedClock();
+            setInterval(updateFixedClock, 1000);
+
+            // Slider ya Ba Admin
+            const slides = document.querySelectorAll(".admin-slide");
+            let currentSlide = 0;
+            if (slides.length > 0) {
+                setInterval(() => {
+                    slides[currentSlide].classList.remove("active");
+                    currentSlide = (currentSlide + 1) % slides.length;
+                    slides[currentSlide].classList.add("active");
+                }, 3000);
+            }
+        });
+
+        function sendEmailFromPage(event) {
+            event.preventDefault();
+            const name = document.getElementById("senderName").value.trim();
+            const senderEmail = document.getElementById("senderEmail").value.trim();
+            const subject = document.getElementById("emailSubject").value.trim();
+            const message = document.getElementById("emailBodyMessage").value.trim();
+
+            const adminEmail = "ukwitegetseprosper@gmail.com";
+            const mailBody = `Amazina: ${name}%0D%0AEmail: ${senderEmail}%0D%0A%0D%0AUbutumwa:%0D%0A${encodeURIComponent(message)}`;
+
+            window.location.href = `mailto:${adminEmail}?subject=${encodeURIComponent(subject)}&body=${mailBody}`;
+        }
+
+    </script>
+<script src="script_6.js"></script>
+</body>
+
+</html>
