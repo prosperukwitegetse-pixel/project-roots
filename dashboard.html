@@ -57,28 +57,12 @@
   <!-- Main Content Body -->
   <div class="main-content" id="mainContent">
 
-    <!-- AGACARD KO GUFUNGURA CYANGWA GUFUNGA SIDEBAR -->
-    <div id="sidebarToggleCard" onclick="toggleSidebar()" class="sidebar-toggle-card" title="Fungura / Funga Menu">
-      <div class="toggle-card-icon">
-        <i class="fa-solid fa-bars" id="toggleIcon"></i>
-      </div>
-      <div class="toggle-card-text">
-        <span id="toggleCardLabel">Menu</span>
-        <small>Kanda hano</small>
-      </div>
-    </div>
-
-    <!-- USER SESSION BADGE -->
-    <div class="user-session-badge">
-      <span id="loggedUserName" data-user-name>Umukoresha</span>
-      <small id="loggedUserRole" data-user-role>User</small>
-      <button type="button" onclick="handleLogout()">Logout</button>
-    </div>
 
     <!-- TOP HEADER IRIMO ISAHA -->
     <div class="top-header"
       style="display: flex; justify-content: space-between; align-items: center; background: #ffffff; padding: 15px 25px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 25px; flex-wrap: wrap; gap: 12px;">
       <div>
+        
         <h3 style="margin: 0; font-size: 18px; color: #0b62ee; display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
           <span>📌 System Dashboard</span>
           <span id="dbStatusBadge"
@@ -99,8 +83,26 @@
           <div id="liveDate" style="font-size: 11px; color: #64748b; font-weight: 500;">Kuwa...</div>
         </div>
       </div>
+    </div> 
+
+     <!-- AGACARD KO GUFUNGURA CYANGWA GUFUNGA SIDEBAR -->
+    <div id="sidebarToggleCard" onclick="toggleSidebar()" class="sidebar-toggle-card" title="Fungura / Funga Menu">
+      <div class="toggle-card-icon">
+        <i class="fa-solid fa-bars" id="toggleIcon"></i>
+      </div>
+      <div class="toggle-card-text">
+        <span id="toggleCardLabel">Menu</span>
+        <small>Kanda hano</small>
+      </div>
     </div>
 
+    <!-- USER SESSION BADGE -->
+    <div class="user-session-badge">
+      <span id="loggedUserName" data-user-name>Umukoresha</span>
+      <small id="loggedUserRole" data-user-role>User</small>
+      <button type="button" onclick="handleLogout()">Logout</button>
+    </div>
+        
     <!-- 1. HOME TAB -->
     <div id="home" class="content-section active">
       <h2 id="welcomeTitle">🏠 Ikaze kuri Home</h2>
