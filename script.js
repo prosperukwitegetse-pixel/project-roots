@@ -340,6 +340,9 @@ async function saveCollectionToCloud(changedKey = null, changedData = null) {
       if (targetPath && Array.isArray(changedData)) {
         await firebaseDb.ref(targetPath).set(arrayToFirebaseNode(changedData));
         await firebaseDb.ref(`${DB_PATHS.meta}/updatedAt`).set(new Date().toISOString());
+        updates[`/${DB_PATHS.meta}/updatedAt`] = new Date().toISOString();
+        updates[`/${DB_PATHS.meta}/lastClockTime`] = new Date().toTimeString().slice(0, 8);
+         updates[`/${DB_PATHS.meta}/lastClockDate`] = new Date().toLocaleDateString("rw-RW");
       } else {
         await writeAllNodesToFirebase(getFullSystemState());
       }
